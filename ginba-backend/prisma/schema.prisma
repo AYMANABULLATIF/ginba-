@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String  @id @default(uuid())
+  email     String  @unique
+  password  String
+  role      UserRole
+  // e.g., "EMPLOYEE", "TEAM_LEADER", "MANAGER"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relation example
+  reports   Report[]
+}
+
+model Report {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  workDate      DateTime
+  location      String
+  description   String
+  overtimeHours Float    @default(0)
+  status        ReportStatus @default(PENDING)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum UserRole {
+  EMPLOYEE
+  TEAM_LEADER
+  MANAGER
+}
+
+enum ReportStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DRAFT
+}
