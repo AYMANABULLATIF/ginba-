@@ -1,49 +1,81 @@
+// prisma/schema.prisma
+
+// Define your database connection
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// Define the generator for Prisma Client
 generator client {
   provider = "prisma-client-js"
 }
 
+// Your models
 model User {
-  id        String  @id @default(uuid())
-  email     String  @unique
-  password  String
-  role      UserRole
-  // e.g., "EMPLOYEE", "TEAM_LEADER", "MANAGER"
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  firstName     String
+  lastName      String
+  birthdate     DateTime?
+  age           Int?
+  nationality   String?
+  role          UserRole    @default(EMPLOYEE)
+  companyCode   String?
+  profileImage  String?
+  status        UserStatus  @default(ACTIVE)
   
-  // Relation example
-  reports   Report[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  reports       Report[]
 }
 
 model Report {
-  id            String   @id @default(uuid())
+  id            String       @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
+  user          User         @relation(fields: [userId], references: [id])
   workDate      DateTime
   location      String
   description   String
-  overtimeHours Float    @default(0)
+  overtimeHours Float        @default(0)
   status        ReportStatus @default(PENDING)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  type        String
+  content     String
+  targetRole  String
+  metadata    String?
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
 }
 
 enum UserRole {
   EMPLOYEE
   TEAM_LEADER
   MANAGER
+  ADMIN
 }
 
 enum ReportStatus {
   PENDING
-  APPROVED
-  REJECTED
+  LEADER_APPROVED
+  LEADER_REJECTED
+  MANAGER_APPROVED
+  MANAGER_REJECTED
+  APPROVED  
+  REJECTED  
   DRAFT
 }

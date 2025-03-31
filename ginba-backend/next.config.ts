@@ -1,12 +1,10 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   async headers() {
     return [
       {
-        // Apply these headers to all API routes
+        // Apply to all API routes
         source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
@@ -19,4 +17,4 @@ const nextConfig: NextConfig = {
   }
 };
 
-export default nextConfig;
+module.exports = nextConfig;
